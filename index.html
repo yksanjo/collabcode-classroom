@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollabCode Classroom - Live Coding for Education</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Segoe+UI:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>CollabCode Classroom</span>
+                </div>
+                <div class="role-badge" id="roleBadge">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Teacher</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="room-info">
+                    <span class="room-label">Class:</span>
+                    <span class="room-id" id="roomId">---</span>
+                    <button class="btn-icon btn-copy" id="copyRoomLink" title="Copy Class Link">
+                        <i class="fas fa-link"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="class-stats">
+                    <span class="stat"><i class="fas fa-users"></i> <span id="studentCount">0</span></span>
+                </div>
+                <div class="participants" id="participants"></div>
+                <div class="connection-status">
+                    <span class="status-dot disconnected"></span>
+                    <span class="status-text">Offline</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Container -->
+        <div class="main-container">
+            <!-- Sidebar - Student List -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <span class="sidebar-title">Students</span>
+                    <span class="student-count-badge" id="studentCountBadge">0</span>
+                </div>
+                <div class="student-list" id="studentList">
+                    <!-- Students will appear here -->
+                </div>
+                <div class="sidebar-footer">
+                    <button class="btn btn-primary btn-full" id="startClass">
+                        <i class="fas fa-play"></i> Start Class
+                    </button>
+                    <button class="btn btn-secondary btn-full" id="lockCode" style="display:none">
+                        <i class="fas fa-lock"></i> Lock Code
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Editor Area -->
+            <main class="editor-area">
+                <div class="editor-toolbar">
+                    <div class="toolbar-left">
+                        <span class="toolbar-title" id="currentFileName">main.js</span>
+                        <span class="toolbar-status" id="codeStatus">
+                            <i class="fas fa-unlock"></i> Editing enabled
+                        </span>
+                    </div>
+                    <div class="toolbar-right">
+                        <button class="btn-icon" id="runCode" title="Run Code">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="btn-icon" id="shareScreen" title="Share My Screen">
+                            <i class="fas fa-desktop"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="editor-wrapper">
+                    <div id="monacoEditor"></div>
+                </div>
+                <div class="output-panel" id="outputPanel">
+                    <div class="output-header">
+                        <span>Output</span>
+                        <button class="btn-icon btn-small" id="clearOutput">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <pre class="output-content" id="outputContent"></pre>
+                </div>
+            </main>
+        </div>
+
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <div class="status-left">
+                <span class="status-item" id="cursorPosition">Ln 1, Col 1</span>
+                <span class="status-item" id="languageMode">JavaScript</span>
+            </div>
+            <div class="status-center">
+                <span class="status-item status-teaching" id="teachingMode">
+                    <i class="fas fa-circle"></i> Live Teaching
+                </span>
+            </div>
+            <div class="status-right">
+                <span class="status-item">UTF-8</span>
+                <span class="status-item">Spaces: 2</span>
+            </div>
+        </footer>
+
+        <!-- Welcome Modal -->
+        <div class="modal" id="welcomeModal">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h2><i class="fas fa-graduation-cap"></i> CollabCode Classroom</h2>
+                    <p class="text-muted">Live coding platform for teachers and students</p>
+                </div>
+                <div class="modal-body">
+                    <div class="role-selector">
+                        <button class="role-card active" data-role="teacher">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>I'm a Teacher</span>
+                            <small>Create a class, control the code</small>
+                        </button>
+                        <button class="role-card" data-role="student">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>I'm a Student</span>
+                            <small>Join a class, follow along</small>
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="usernameInput" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Join or Create Class</label>
+                        <div class="join-options">
+                            <button class="btn btn-primary" id="createRoom">
+                                <i class="fas fa-plus"></i> Create Class
+                            </button>
+                            <div class="divider"><span>or</span></div>
+                            <input type="text" id="roomCodeInput" placeholder="Enter class code">
+                            <button class="btn btn-secondary" id="joinRoom">
+                                <i class="fas fa-sign-in-alt"></i> Join Class
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container" id="toastContainer"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
